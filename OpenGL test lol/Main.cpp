@@ -31,6 +31,7 @@ vec3d Rotate(vec3d Point, vec3d Origin, vec3d rotation)
 	rot.y = rotation.y * DEG2RAD;
 	rot.z = rotation.z * DEG2RAD;
 
+	
 
 	float x1 = moved.x * cos(rot.x) - moved.y * sin(rot.x);
 	float y1 = moved.x * sin(rot.x) + moved.y * cos(rot.x);
@@ -44,7 +45,7 @@ vec3d Rotate(vec3d Point, vec3d Origin, vec3d rotation)
 	float z3 = y2 * sin(rot.z) + z2 * cos(rot.z);
 	float x3 = x2;
 
-	vec3d temp { x3 + Origin.x, y3 + Origin.y, z3 + Origin.z};
+	vec3d temp = { x3 + Origin.x, y3 + Origin.y, z3 + Origin.z};
 
 	return temp;
 }
@@ -66,7 +67,7 @@ vec3d Convert(float x, float y, float z, vec3d resolution)
 	vec3d output;
 	output.x = (x - (resolution.x / 2)) / (resolution.x / 2);
 	output.y = (y - (resolution.y / 2)) / (resolution.y / 2);
-	output.z = /* z / resolution.z; */(z - (resolution.z / 2)) / (resolution.z / 2);
+	output.z = (z - (resolution.z / 2)) / (resolution.z / 2);
 	return output;
 }
 
@@ -81,19 +82,21 @@ int main(void)
 
 	vec3d res;
 	res.x = 1000;
-	res.y = 400;
-	res.z = 400;
+	res.y = 1000;
+	res.z = 1000;
 
 	vector<vector<vec3d>> objectstorender;
 	objectstorender.clear();
 	//objectstorender.push_back({ {-50,-50,0}, {0,50,50}, {50,-50,0} });
+
+	//objectstorender.push_back({ {-50,-50,0}, {0,50,0}, {50,50,0} });
+
+
 	//objectstorender.push_back({ {-40,-50,50}, {10,50,0}, {60,-50,50} });
 	
-	//objectstorender.push_back({ {-10,0,-10 }, {-10,10,10}, {10,0,10}, {10,0,-10} });
+    objectstorender.push_back({ {-10,0,-10 }, {-10,10,10}, {10,0,10}, {10,0,-10} });
 
-	objectstorender.push_back({ {-20,0,-20 }, {-20,0,20}, {20,0,20}, {20,0,-20} });
-
-	objectstorender.push_back({ {0,0,-20 }, {00,0,20}, {40,0,20}, {40,0,-20} });
+	objectstorender.push_back({ {30,0,-10 }, {30,0,10}, {70,0,10}, {70,0,-10} });
 
 	GLFWwindow* window = glfwCreateWindow(res.x, res.y, "OpenGL Example", NULL, NULL);
 	if (!window)
@@ -116,14 +119,14 @@ int main(void)
 
 
 	vec3d cam_pos = {0,0,0};//{ res.x / 2,  res.y / 2,  res.z / 2, };
-	vec3d cam_rot = {0,0,0};
+	vec3d cam_rot = {0,0,90};
 
 	bool ballLeft = true;
 	bool ballDown = true;
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LEQUAL);
-	glDepthRange(0.0f, 1.0f);
+	glDepthRange(-1.0f, 1.0f);
 	while (!glfwWindowShouldClose(window))
 	{
 		float ratio;
@@ -137,28 +140,39 @@ int main(void)
 		glClearDepth(1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		float mov_speed = 0.2;
+
 		if (glfwGetKey(window, GLFW_KEY_UP))
 		{
-			cam_pos.y += 1;
+			cam_pos.y += mov_speed;
 		}
 		if (glfwGetKey(window, GLFW_KEY_DOWN))
 		{
-			cam_pos.y -= 1;
+			cam_pos.y -= mov_speed;
 		}
 		if (glfwGetKey(window, GLFW_KEY_RIGHT))
 		{
-			cam_pos.x += 1;
+			cam_pos.x += mov_speed;
 		}
 		if (glfwGetKey(window, GLFW_KEY_LEFT))
 		{
-			cam_pos.x -= 1;
+			cam_pos.x -= mov_speed;
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_W))
+		{
+			cam_pos.z += mov_speed;
+		}
+		if (glfwGetKey(window, GLFW_KEY_S))
+		{
+			cam_pos.z -= mov_speed;
 		}
 
 		cam_rot.x = fmod(cam_rot.x, 360);
 		cam_rot.y = fmod(cam_rot.y, 360);
 		cam_rot.z = fmod(cam_rot.z, 360);
 
-		float rot_speed = 0.08;
+		float rot_speed = 0.2;
 
 		if (glfwGetKey(window, GLFW_KEY_1))
 		{
@@ -188,18 +202,9 @@ int main(void)
 		}
 
 
-		if (glfwGetKey(window, GLFW_KEY_W))
-		{
-			cam_pos.z += 1;
-		}
-		if (glfwGetKey(window, GLFW_KEY_S))
-		{
-			cam_pos.z -= 1;
-		}
-
-		r = fmod(r + 0.01, 1);
-		g = fmod(g + 0.03, 1);
-		b = fmod(b + 0.02, 1);
+		//r = fmod(r + 0.01, 1);
+		//g = fmod(g + 0.03, 1);
+		//b = fmod(b + 0.02, 1);
 
 		r2 = r;
 		g2 = g;
